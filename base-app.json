@@ -3,7 +3,7 @@
     "info": {
         "title": "API di Esempio per Utenti",
         "description": "Una semplice API per dimostrare la specifica OpenAPI. Permette di creare e recuperare utenti.",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "contact": {
             "name": "Team di Sviluppo",
             "email": "dev-team@example.com"
