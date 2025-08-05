@@ -1,0 +1,255 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "API di Esempio per Utenti",
+        "description": "Una semplice API per dimostrare la specifica OpenAPI. Permette di creare e recuperare utenti.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Team di Sviluppo",
+            "email": "dev-team@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.example.com/v1",
+            "description": "Server di Produzione"
+        },
+        {
+            "url": "https://staging-api.example.com/v1",
+            "description": "Server di Staging"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Utenti",
+            "description": "Operazioni relative agli utenti"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": [
+                    "Utenti"
+                ],
+                "summary": "Restituisce una lista di utenti",
+                "description": "Recupera una lista paginata di tutti gli utenti nel sistema.",
+                "operationId": "getUsers",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Numero massimo di utenti da restituire",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operazione eseguita con successo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserArray"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Errore interno del server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Utenti"
+                ],
+                "summary": "Crea un nuovo utente",
+                "description": "Aggiunge un nuovo utente al sistema.",
+                "operationId": "createUser",
+                "requestBody": {
+                    "description": "L'oggetto utente da creare",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NewUserInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utente creato con successo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dati di input non validi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "tags": [
+                    "Utenti"
+                ],
+                "summary": "Trova un utente tramite ID",
+                "description": "Restituisce un singolo utente in base al suo ID.",
+                "operationId": "getUserById",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "ID dell'utente da restituire",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operazione eseguita con successo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utente non trovato"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "username",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "ID univoco dell'utente",
+                        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Nome utente univoco",
+                        "example": "MarioRossi"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Indirizzo email dell'utente",
+                        "example": "mario.rossi@example.com"
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data di creazione dell'utente (sola lettura)",
+                        "readOnly": true
+                    }
+                }
+            },
+            "NewUserInput": {
+                "type": "object",
+                "required": [
+                    "username",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "MarioRossi"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "mario.rossi@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "description": "Password per il nuovo utente (non verrà restituita)",
+                        "writeOnly": true
+                    }
+                }
+            },
+            "UserArray": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/User"
+                }
+            },
+            "Error": {
+                "type": "object",
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key"
+            }
+        }
+    },
+    "security": [
+        {
+            "ApiKeyAuth": []
+        }
+    ]
+}
